@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\FicheroController;
+use App\Models\Fichero;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -23,6 +25,12 @@ Route::middleware([
     'verified',
 ])->group(function () {
     Route::get('/dashboard', function () {
-        return view('dashboard');
+        return view('dashboard', ['ficheros' => Fichero::paginate()]);
     })->name('dashboard');
+
+    Route::get('/ficheros/create', [FicheroController::class, 'create'])
+    ->name('ficheros.create');
+    Route::post('/ficheros',[FicheroController::class, 'store'])
+    ->name('ficheros.store');
+
 });
