@@ -32,10 +32,10 @@ class FicheroController extends Controller
         //return $request;
         $request->validate([
             'nombre' => 'required',
-            'extension' => 'required',
+            'extension' => 'required',  
         ]);
 
-        $fichero = $request->input('nombre').".".$request->input('extension');
+        $fichero = $request->input('extension')."/".$request->input('nombre').".".$request->input('extension');
         Storage::put($fichero, '');
 
         Fichero::create([
@@ -52,7 +52,23 @@ class FicheroController extends Controller
      */
     public function show(Fichero $fichero)
     {
-        //
+
+        $rutaArchivo = storage_path("app/{$fichero->ruta}");
+
+        if (file_exists($rutaArchivo)) {
+            $contenido = file_get_contents($rutaArchivo);
+
+            return view('ficheros.show', [
+                'contenido' => $contenido,
+                'fichero' => $fichero
+            ]);
+        }
+
+    return abort(404);
+
+        // return view('ficheros.show' , [
+        //     'fichero' => $fichero
+        // ]);
     }
 
     /**
@@ -68,7 +84,25 @@ class FicheroController extends Controller
      */
     public function update(Request $request, Fichero $fichero)
     {
-        //
+        //return nl2br($request->contenido);
+
+        $rutaArchivo = storage_path("app/{$fichero->ruta}");
+
+        if (file_exists($rutaArchivo)) {
+            $nuevoContenido = $request->input('contenido');
+            // $nuevoContenido = strip_tags($nuevoContenido);
+
+            // $nuevoContenido = str_replace('<p/>','<p/><br>' , $nuevoContenido);
+            // $nuevoContenido = str_replace('<br />', PHP_EOL, $nuevoContenido);
+            
+            // Guardar el nuevo contenido en el archivo
+            file_put_contents($rutaArchivo, $nuevoContenido);
+
+            return redirect()->route('dashboard');
+        }
+
+        return abort(404); // Archivo no encontrado
+
     }
 
     /**

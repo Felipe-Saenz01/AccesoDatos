@@ -30,7 +30,11 @@ Route::middleware([
 
     Route::get('/ficheros/create', [FicheroController::class, 'create'])
     ->name('ficheros.create');
+    Route::get('/ficheros/{fichero}/show', [FicheroController::class, 'show'])
+    ->name('ficheros.show');
     Route::post('/ficheros',[FicheroController::class, 'store'])
     ->name('ficheros.store');
+    Route::put('/ficheros/{fichero}',[FicheroController::class, 'update'])
+    ->name('ficheros.update');
 
 });
