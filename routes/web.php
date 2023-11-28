@@ -41,5 +41,7 @@ Route::middleware([
 
     Route::put('/ficheros/{fichero}/xml', [FicheroController::class, 'xmlUpdate'])
     ->name('ficheros.xml');
+    Route::put('/ficheros/{fichero}/doc', [FicheroController::class, 'docUpdate'])
+    ->name('ficheros.doc');
    
 });

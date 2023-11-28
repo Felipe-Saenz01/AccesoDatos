@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Fichero;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use PhpOffice\PhpWord\IOFactory;
 use PhpOffice\PhpWord\PhpWord;
+
 use SimpleXMLElement;
 
 class FicheroController extends Controller
@@ -77,16 +79,28 @@ class FicheroController extends Controller
                         $section->addText('Hola, este es un fichero de Word creado con Laravel.');
                         $phpword->save($rutaArchivo);
 
-                        return "Archivo actualizado";
-
-                    }else{
-                        return 'archivo no vacio';
+                    }
+                    $phpword = new PhpWord();
+                    //$document = $phpword->TemplateProcessor($rutaArchivo);
+                    $document = IOFactory::load($rutaArchivo);
+                    $contenidoTexto = '';
+                    foreach ($document->getSections() as $section) {
+                        // Recorrer cada elemento en la sección
+                        foreach ($section->getElements() as $element) {
+                            // Verificar si el elemento es un texto
+                            if ($element instanceof \PhpOffice\PhpWord\Element\TextRun) {
+                                // Recorrer cada fragmento de texto
+                                foreach ($element->getElements() as $text) {
+                                    // Agregar el texto al contenido
+                                    $contenidoTexto .= $text->getText();
+                                }
+                            }
+                        }
                     }
 
-                    $contenido = file_get_contents($rutaArchivo);
 
                     return view('ficheros.'.$extension , [
-                        'contenido' => $contenido,
+                        'contenido' => $contenidoTexto,
                         'fichero' => $fichero
                     ]);
                     break;
@@ -94,6 +108,7 @@ class FicheroController extends Controller
                     
                     if (filesize($rutaArchivo) == 0)
                     {
+                        
                         $xml = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><root></root>');
 
                         // Agregar elementos y atributos al objeto xml
@@ -103,10 +118,9 @@ class FicheroController extends Controller
                         // Guardar el objeto xml en el fichero
                         $xml->asXML($rutaArchivo);
                     }
+
                     $contenido = file_get_contents($rutaArchivo);
                     $xml = simplexml_load_file(storage_path('app/'.$fichero->ruta));
-
-                    dd($xml);
 
                     return view('ficheros.'.$extension , [
                         'fichero' => $fichero,
@@ -180,11 +194,9 @@ class FicheroController extends Controller
        // Obtener la ruta del fichero
         $file_path = storage_path("app/{$fichero->ruta}");
 
-        // Crear un nuevo objeto xml
-        $contenido = file_get_contents($file_path);
+
         $xml = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><root></root>');
 
-        // Recorrer los elementos y los atributos del request
         foreach ($request->elements as $index => $element) {
             $child = $xml->addChild($element);
             foreach ($request->get('attributes')[$element] as $key => $value) {
@@ -192,13 +204,18 @@ class FicheroController extends Controller
             }
         }
 
-        // Guardar el objeto xml en el storage
         Storage::put("app/{$fichero->ruta}", $xml->asXML());
-
-
         
-        // Retornar la vista de éxito con un mensaje
-        //return view('dashboard')->with('message', 'El fichero xml ha sido actualizado correctamente.');
+        return redirect()->route('dashboard');
+    }
+
+
+    public function docUpdate(Request $request, Fichero $fichero){
+        $file_path = storage_path("app/{$fichero->ruta}");
+        $phpword = new PhpWord();
+        $section = $phpword->addSection();
+        $section->addText($request->input('contenido'));
+        $phpword->save($file_path);
         return redirect()->route('dashboard');
     }
 

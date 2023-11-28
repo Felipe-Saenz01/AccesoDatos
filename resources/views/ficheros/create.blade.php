@@ -31,9 +31,7 @@
                     <option value="">Seleccione tipo</option>
                     <option value="txt">TXT</option>
                     <option value="doc">DOC</option>
-                    <option value="csv">CSV</option>
                     <option value="xml">XML</option>
-                    <option value="xlsx">XLSX</option>
                 </x-select>
             </div>
         
