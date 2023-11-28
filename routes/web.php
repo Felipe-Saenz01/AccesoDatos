@@ -25,16 +25,21 @@ Route::middleware([
     'verified',
 ])->group(function () {
     Route::get('/dashboard', function () {
-        return view('dashboard', ['ficheros' => Fichero::paginate()]);
+        return view('dashboard', ['ficheros' => Fichero::latest()->paginate()]);
     })->name('dashboard');
 
     Route::get('/ficheros/create', [FicheroController::class, 'create'])
     ->name('ficheros.create');
-    Route::get('/ficheros/{fichero}/show', [FicheroController::class, 'show'])
+    Route::get('/ficheros/{fichero}/{extension}', [FicheroController::class, 'show'])
     ->name('ficheros.show');
     Route::post('/ficheros',[FicheroController::class, 'store'])
     ->name('ficheros.store');
     Route::put('/ficheros/{fichero}',[FicheroController::class, 'update'])
     ->name('ficheros.update');
+    Route::delete('/ficheros/{fichero}',[FicheroController::class, 'destroy'])
+    ->name('ficheros.destroy');
 
+    Route::put('/ficheros/{fichero}/xml', [FicheroController::class, 'xmlUpdate'])
+    ->name('ficheros.xml');
+   
 });

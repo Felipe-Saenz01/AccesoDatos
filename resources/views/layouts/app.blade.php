@@ -17,7 +17,6 @@
         <!-- Styles -->
         @livewireStyles
 
-        <script src="https://cdn.ckeditor.com/ckeditor5/40.1.0/classic/ckeditor.js"></script>
     </head>
     <body class="font-sans antialiased">
         <x-banner />

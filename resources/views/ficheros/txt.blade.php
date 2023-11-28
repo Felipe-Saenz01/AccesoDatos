@@ -6,7 +6,7 @@
 
         <div class="mx-auto font-bold flex justify-between my-5">
             <h1 class="mr-auto">Editar Fichero</h1>
-            <form action="#" method="POST">
+            <form action="{{ route('ficheros.destroy',$fichero) }}" method="POST">
                 @csrf
                 @method('delete')
                 <button type="submit" class="bg-red-500 hover:bg-red-700 dark:text-gray-200 py-1 px-2 font-bold rounded-md">
@@ -34,22 +34,13 @@
                 <x-label for="nombre" value="{{ __('Nombre Fichero') }}" />
                 <x-input id="nombre" class="block mt-1 w-full" type="text" name="nombre" value="{{ $fichero->nombre}}" required autofocus />
             </div>
-
-            <textarea name="contenido" id="editor" cols="30" rows="10">
-                {!! nl2br(e($contenido)) !!}
-            </textarea>
-
-            <script>
-                ClassicEditor
-                    .create( document.querySelector( '#editor' ),{
-                        enterMode: 'br',
-                        shiftEnterMode: 'br'
-                    } )
-                    .catch( error => {
-                        console.error( error );
-                    } );
-            </script>
-        
+                
+            <div class="mb 4">
+                <x-label for="contenido" value="{{ __('Contenido del Fichero') }}" />
+                <textarea class="mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" name="contenido" style="text-indent: 0px !important;"  id="contenido" cols="30" rows="10">
+                    {{ $contenido }}
+                </textarea>
+            </div>
 
             <div class="flex items-center justify-end mt-4">
                 <x-button class="ms-4">
